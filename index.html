@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>₹50,000 DAILY LUCKY DRAW - Pick Your Number!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
+        :root {
+            --gold: #FFD700;
+            --dark-gold: #D4AF37;
+            --black: #111;
+            --light-bg: #1a1a1a;
+            --glow: 0 0 15px rgba(255, 215, 0, 0.7);
+            --red-glow: 0 0 15px rgba(255, 50, 50, 0.7);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--black);
+            color: white;
+            min-height: 100vh;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+        
+        .header .prize {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--gold);
+            margin: 10px 0;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .header .price {
+            background-color: var(--gold);
+            color: #000;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        /* Ticket Grid */
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .ticket {
+            background: linear-gradient(135deg, #333, #222);
+            border: 2px solid var(--dark-gold);
+            border-radius: 8px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .ticket:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glow);
+        }
+        
+        .ticket.selected {
+            background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+            color: #000;
+            box-shadow: var(--glow);
+            transform: translateY(-3px);
+        }
+        
+        .ticket.sold {
+            background: #333;
+            color: #777;
+            cursor: not-allowed;
+            border-color: #555;
+        }
+        
+        /* Action Button */
+        .action-btn {
+            background: linear-gradient(135deg, #ff3333, #cc0000);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0;
+            box-shadow: var(--red-glow);
+            transition: all 0.2s;
+        }
+        
+        .action-btn:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .action-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+        
+        /* Winners Feed */
+        .winners {
+            background: #1a1a1a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .winners h3 {
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .winner {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .winner:last-child {
+            border-bottom: none;
+        }
+        
+        .winner-amount {
+            color: var(--gold);
+            font-weight: bold;
+        }
+        
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid var(--gold);
+            box-shadow: var(--glow);
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        /* Payment Modal */
+        .payment-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #444;
+            background: #333;
+            color: white;
+            margin: 15px 0;
+            font-size: 16px;
+        }
+        
+        /* Share Modal */
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        
+        .whatsapp-btn img {
+            width: 20px;
+            margin-right: 8px;
+        }
+        
+        /* Confirmation Modal */
+        .ticket-confirmed {
+            text-align: center;
+            padding: 15px 0;
+        }
+        
+        .ticket-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--gold);
+            margin: 15px 0;
+            animation: bounce 0.8s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-8px); }
+        }
+        
+        /* Bonus Offer */
+        .bonus-offer {
+            margin-top: 20px;
+            padding: 15px;
+            background: #222;
+            border-radius: 8px;
+            border: 1px solid var(--gold);
+            animation: fadeIn 1s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>₹50,000 DAILY LUCKY DRAW</h1>
+            <div class="prize">WIN UP TO ₹50,000!</div>
+            <div>Pick your lucky number (100-120)</div>
+            <div class="price">ONLY ₹10 PER TICKET</div>
+            <div>Results announced daily at 8PM</div>
+        </div>
+        
+        <!-- Ticket Selection Grid -->
+        <div class="ticket-grid" id="ticketGrid">
+            <!-- Numbers 100-120 will be generated here -->
+        </div>
+        
+        <!-- Confirm Button -->
+        <button class="action-btn" id="confirmBtn" disabled>CONFIRM SELECTED TICKET</button>
+        
+        <!-- Recent Winners -->
+        <div class="winners">
+            <h3>RECENT WINNERS</h3>
+            <div class="winner">
+                <span>Rahul (Delhi)</span>
+                <span class="winner-amount">₹25,000</span>
+            </div>
+            <div class="winner">
+                <span>Priya (Mumbai)</span>
+                <span class="winner-amount">₹10,000</span>
+            </div>
+            <div class="winner">
+                <span>Amit (Bangalore)</span>
+                <span class="winner-amount">₹5,000</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closePaymentModal">&times;</button>
+            <h2>PAY ₹10 FOR TICKET #<span id="paymentTicketNumber"></span></h2>
+            <p>Send ₹10 to this UPI ID:</p>
+            <p style="text-align: center; font-weight: bold; color: var(--gold); margin: 10px 0;">keanjohn72@oksbi</p>
+            <p>Then enter your UPI reference number:</p>
+            <input type="text" class="payment-input" id="upiReference" placeholder="12-19 digit reference number">
+            <button class="action-btn" id="submitPaymentBtn">SUBMIT PAYMENT</button>
+        </div>
+    </div>
+    
+    <!-- Share Modal -->
+    <div class="modal" id="shareModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeShareModal">&times;</button>
+            <h2>SHARE TO ACTIVATE TICKET #<span id="shareTicketNumber"></span></h2>
+            <p>Share this with 1 friend on WhatsApp to activate your ticket:</p>
+            <button class="whatsapp-btn" id="whatsappShareBtn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+                SHARE ON WHATSAPP
+            </button>
+            <div id="shareStatus">Waiting for you to share...</div>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmationModal">
+        <div class="modal-content">
+            <div class="ticket-confirmed">
+                <h2>🎉 YOUR TICKET IS CONFIRMED!</h2>
+                <div class="ticket-number" id="confirmedTicketNumber">#100</div>
+                <p>Check back tomorrow at 8PM for results!</p>
+                
+                <!-- Bonus Offer (shown after 5 seconds) -->
+                <div class="bonus-offer" id="bonusOffer" style="display: none;">
+                    <h3>SPECIAL BONUS!</h3>
+                    <p>Share with 3 more friends to get</p>
+                    <p style="font-size: 24px; color: var(--gold); font-weight: bold;">+₹50 INSTANT CASH</p>
+                    <p>if your ticket wins!</p>
+                    <button class="whatsapp-btn" id="bonusWhatsappBtn">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+                        SHARE WITH 3 FRIENDS
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const ticketGrid = document.getElementById('ticketGrid');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const paymentModal = document.getElementById('paymentModal');
+        const shareModal = document.getElementById('shareModal');
+        const confirmationModal = document.getElementById('confirmationModal');
+        
+        // Ticket selection variables
+        let selectedTicket = null;
+        let confirmedTicket = null;
+        
+        // Generate tickets 100-120
+        for (let i = 100; i <= 120; i++) {
+            const ticket = document.createElement('div');
+            ticket.className = 'ticket';
+            ticket.textContent = i;
+            ticket.dataset.number = i;
+            
+            // Randomly mark some as sold (for realism)
+            if (Math.random() < 0.3) {
+                ticket.classList.add('sold');
+            } else {
+                ticket.addEventListener('click', () => {
+                    // Deselect previous ticket
+                    if (selectedTicket) {
+                        selectedTicket.classList.remove('selected');
+                    }
+                    
+                    // Select new ticket
+                    selectedTicket = ticket;
+                    ticket.classList.add('selected');
+                    confirmBtn.disabled = false;
+                });
+            }
+            
+            ticketGrid.appendChild(ticket);
+        }
+        
+        // Confirm button click
+        confirmBtn.addEventListener('click', () => {
+            if (selectedTicket) {
+                document.getElementById('paymentTicketNumber').textContent = selectedTicket.dataset.number;
+                paymentModal.classList.add('active');
+            }
+        });
+        
+        // Payment submission
+        document.getElementById('submitPaymentBtn').addEventListener('click', () => {
+            const upiRef = document.getElementById('upiReference').value.trim();
+            
+            // Simple validation
+            if (upiRef.length >= 12 && upiRef.length <= 19 && /^\d+$/.test(upiRef)) {
+                paymentModal.classList.remove('active');
+                confirmedTicket = selectedTicket.dataset.number;
+                document.getElementById('shareTicketNumber').textContent = confirmedTicket;
+                document.getElementById('confirmedTicketNumber').textContent = `#${confirmedTicket}`;
+                shareModal.classList.add('active');
+            } else {
+                alert('Please enter a valid 12-19 digit UPI reference number');
+            }
+        });
+        
+        // WhatsApp share button
+        document.getElementById('whatsappShareBtn').addEventListener('click', () => {
+            const message = `I just got ticket #${confirmedTicket} for the ₹50,000 Daily Lucky Draw! Only ₹10 to enter - results at 8PM. Try your luck now!`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+            
+            // Simulate share detection (in a real app this would verify sharing)
+            setTimeout(() => {
+                document.getElementById('shareStatus').textContent = 'Share successful!';
+                setTimeout(() => {
+                    shareModal.classList.remove('active');
+                    confirmationModal.classList.add('active');
+                    
+                    // Show bonus offer after 5 seconds
+                    setTimeout(() => {
+                        document.getElementById('bonusOffer').style.display = 'block';
+                    }, 5000);
+                }, 1000);
+            }, 1500);
+        });
+        
+        // Bonus WhatsApp share
+        document.getElementById('bonusWhatsappBtn').addEventListener('click', () => {
+            const message = `I just got ticket #${confirmedTicket} for the ₹50,000 Daily Lucky Draw! Only ₹10 to enter - results at 8PM. Try your luck now!`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+            
+            // Simulate bonus share completion
+            setTimeout(() => {
+                alert('Bonus ₹50 activated! You will receive it if your ticket wins!');
+                confirmationModal.classList.remove('active');
+            }, 1500);
+        });
+        
+        // Close modals
+        document.getElementById('closePaymentModal').addEventListener('click', () => {
+            paymentModal.classList.remove('active');
+        });
+        
+        document.getElementById('closeShareModal').addEventListener('click', () => {
+            shareModal.classList.remove('active');
+        });
+    </script>
+</body>
+</html>
